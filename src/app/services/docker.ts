@@ -8,14 +8,34 @@ import type {
 export class DockerService {
   private readonly SCRIPT_PATH = './scripts/create-container.sh';
 
+  private validateContainerId(id: string): void {
+    const validPattern = /^[a-zA-Z0-9_-]+$/;
+    if (!validPattern.test(id)) {
+      throw new Error(`Invalid container ID: ${id}. Only alphanumeric, hyphen, and underscore characters are allowed.`);
+    }
+  }
+
+  private validateContainerName(name: string): void {
+    const validPattern = /^[a-zA-Z0-9_-]+$/;
+    if (!validPattern.test(name)) {
+      throw new Error(`Invalid container name: ${name}. Only alphanumeric, hyphen, and underscore characters are allowed.`);
+    }
+  }
+
   async createContainer(name: string): Promise<ContainerResponse> {
+    this.validateContainerName(name);
     const result = shell.exec(`${this.SCRIPT_PATH} ${name}`, { silent: true });
     
     if (result.code !== 0) {
       throw new Error(`Failed to create container: ${result.stderr}`);
     }
 
-    const output: CreateContainerScriptOutput = JSON.parse(result.stdout);
+    let output: CreateContainerScriptOutput;
+    try {
+      output = JSON.parse(result.stdout);
+    } catch (e) {
+      throw new Error(`Failed to parse script output: Invalid JSON response`);
+    }
     
     return {
       id: output.id,
@@ -28,6 +48,7 @@ export class DockerService {
   }
 
   async startContainer(id: string): Promise<void> {
+    this.validateContainerId(id);
     const result = shell.exec(`docker start ${id}`, { silent: true });
     
     if (result.code !== 0) {
@@ -36,6 +57,7 @@ export class DockerService {
   }
 
   async stopContainer(id: string): Promise<void> {
+    this.validateContainerId(id);
     const result = shell.exec(`docker stop ${id}`, { silent: true });
     
     if (result.code !== 0) {
@@ -44,6 +66,7 @@ export class DockerService {
   }
 
   async deleteContainer(id: string): Promise<void> {
+    this.validateContainerId(id);
     const result = shell.exec(`docker rm -f ${id}`, { silent: true });
     
     if (result.code !== 0) {
@@ -52,13 +75,19 @@ export class DockerService {
   }
 
   async getContainer(id: string): Promise<ContainerResponse> {
+    this.validateContainerId(id);
     const result = shell.exec(`docker inspect --format '{{json .}}' ${id}`, { silent: true });
     
     if (result.code !== 0) {
       throw new Error(`Failed to get container: ${result.stderr}`);
     }
 
-    const inspect = JSON.parse(result.stdout);
+    let inspect;
+    try {
+      inspect = JSON.parse(result.stdout);
+    } catch (e) {
+      throw new Error(`Failed to parse container data: Invalid JSON response`);
+    }
     const status = inspect.State.Status;
     
     const ports: PortMapping[] = [];
@@ -66,8 +95,8 @@ export class DockerService {
     for (const [containerPort, bindings] of Object.entries(portBindings)) {
       if (bindings && bindings.length > 0) {
         ports.push({
-          container: parseInt(containerPort.split('/')[0]),
-          host: parseInt(bindings[0].HostPort)
+          container: parseInt(containerPort.split('/')[0], 10),
+          host: parseInt(bindings[0].HostPort, 10)
         });
       }
     }
@@ -92,7 +121,12 @@ export class DockerService {
     const containers = result.stdout.trim().split('\n').filter(Boolean);
     
     return containers.map(line => {
-      const container = JSON.parse(line);
+      let container;
+      try {
+        container = JSON.parse(line);
+      } catch (e) {
+        throw new Error(`Failed to parse container data: Invalid JSON response`);
+      }
       return {
         id: container.ID.substring(0, 12),
         name: container.Names[0].replace(/^\//, ''),

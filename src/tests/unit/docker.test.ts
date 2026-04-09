@@ -100,4 +100,34 @@ describe('DockerService', () => {
     const result = service.listContainers();
     expect(result).resolves.toBeInstanceOf(Array);
   });
+
+  test('createContainer - 이름 유효성 검증 실패', () => {
+    service = new DockerService();
+    const result = service.createContainer('invalid;name');
+    expect(result).rejects.toThrow('Invalid container name');
+  });
+
+  test('startContainer - ID 유효성 검증 실패', () => {
+    service = new DockerService();
+    const result = service.startContainer('invalid$id');
+    expect(result).rejects.toThrow('Invalid container ID');
+  });
+
+  test('stopContainer - ID 유효성 검증 실패', () => {
+    service = new DockerService();
+    const result = service.stopContainer('invalid$id');
+    expect(result).rejects.toThrow('Invalid container ID');
+  });
+
+  test('deleteContainer - ID 유효성 검증 실패', () => {
+    service = new DockerService();
+    const result = service.deleteContainer('invalid$id');
+    expect(result).rejects.toThrow('Invalid container ID');
+  });
+
+  test('getContainer - ID 유효성 검증 실패', () => {
+    service = new DockerService();
+    const result = service.getContainer('invalid$id');
+    expect(result).rejects.toThrow('Invalid container ID');
+  });
 });
