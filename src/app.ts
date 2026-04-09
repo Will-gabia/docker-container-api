@@ -1,12 +1,17 @@
 // import { csrf } from 'hono/csrf'
 
+import { cors } from 'hono/cors'
 import { z } from 'zod/v4'
 
 import { version } from '../package.json'
 import { Scalar } from '@scalar/hono-api-reference'
+import { authMiddleware } from './lib/middleware/auth'
 import app from './routes'
 
 // app.use('*', csrf({ origin: 'localhost' }))
+
+app.use('*', cors())
+app.use('*', authMiddleware)
 
 app.onError((error, c) => {
   // Log error (Sentry, ....)
