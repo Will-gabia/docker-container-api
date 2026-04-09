@@ -29,10 +29,13 @@ export interface ContainerResponse {
 export interface ErrorResponse {
   error: string;
   message: string;
-  details?: any;
+  details?: Record<string, unknown>;
 }
 
 // 셸 스크립트 반환 타입
+// note: ports는 required인데 ContainerResponse.ports는 optional
+// 이는 컨테이너 생성 스크립트가 항상 포트 정보를 반환하도록 설계되었음을 의미
+// 반면, ContainerResponse는 기존 컨테이너가 포트를 사용하지 않을 수도 있음
 export interface CreateContainerScriptOutput {
   id: string;
   name: string;
