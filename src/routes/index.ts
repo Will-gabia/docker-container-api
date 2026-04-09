@@ -3,6 +3,7 @@ import { cors } from 'hono/cors'
 
 import health from './health'
 import users from './users'
+import containerRoutes from './containers'
 
 import { createRouter } from '../lib/router'
 
@@ -26,7 +27,7 @@ app.use(
 // custom middleware example
 // app.get('/', hello(), c => c.json({ 1: 'Hello', 2: 'World' }))
 
-const routes = [health, users]
+const routes = [health, users, containerRoutes]
 
 routes.forEach(route => {
   app.route('/', route)
