@@ -1,8 +1,18 @@
-import { describe, test, expect } from 'bun:test';
+import { describe, test, expect, beforeEach, afterEach } from 'bun:test';
 import { authMiddleware } from '../../lib/middleware/auth.ts';
 import { Hono } from 'hono';
 
 describe('authMiddleware', () => {
+  const originalApiKey = process.env.API_KEY;
+
+  beforeEach(() => {
+    process.env.API_KEY = 'test-key';
+  });
+
+  afterEach(() => {
+    process.env.API_KEY = originalApiKey;
+  });
+
   test('유효한 API Key로 요청 성공', async () => {
     const app = new Hono();
     app.use('*', authMiddleware);
