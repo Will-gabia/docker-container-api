@@ -7,8 +7,8 @@ import type {
 export class ContainerUseCase {
   private dockerService: DockerService;
 
-  constructor() {
-    this.dockerService = new DockerService();
+  constructor(dockerService?: DockerService) {
+    this.dockerService = dockerService || new DockerService();
   }
 
   async createContainer(request: CreateContainerRequest): Promise<ContainerResponse> {
