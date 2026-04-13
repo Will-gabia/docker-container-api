@@ -2,6 +2,12 @@
 
 set -e
 
+generate_container_name() {
+  local suffix
+  suffix=$(LC_ALL=C tr -dc 'a-z0-9' < /dev/urandom | head -c 6)
+  echo "container-${suffix}"
+}
+
 CONTAINER_NAME=$1
 
 # 컨테이너 이름 검증
@@ -30,6 +36,7 @@ CONTAINER_PORT=80
 # 컨테이너 생성 (Docker 에러를 JSON으로 변환)
 if ! CONTAINER_ID=$(docker run -d \
   --name "$CONTAINER_NAME" \
+  --restart unless-stopped \
   -p "$HOST_PORT:$CONTAINER_PORT" \
   "$IMAGE" 2>&1); then
   echo "{\"error\": \"Failed to create container: $CONTAINER_ID\"}" >&2
