@@ -1,37 +1,34 @@
-import { DockerService } from '../services/docker';
-import type { 
-  CreateContainerRequest, 
-  ContainerResponse 
-} from '../../types/containers';
+import { DockerService } from '../services/docker'
+import type { ContainerResponse } from '../../types/containers'
 
 export class ContainerUseCase {
-  private dockerService: DockerService;
+  private dockerService: DockerService
 
   constructor(dockerService?: DockerService) {
-    this.dockerService = dockerService || new DockerService();
+    this.dockerService = dockerService || new DockerService()
   }
 
-  async createContainer(request: CreateContainerRequest): Promise<ContainerResponse> {
-    return await this.dockerService.createContainer(request.name);
+  async createContainer(): Promise<ContainerResponse> {
+    return await this.dockerService.createContainer()
   }
 
   async startContainer(id: string): Promise<void> {
-    await this.dockerService.startContainer(id);
+    await this.dockerService.startContainer(id)
   }
 
   async stopContainer(id: string): Promise<void> {
-    await this.dockerService.stopContainer(id);
+    await this.dockerService.stopContainer(id)
   }
 
   async deleteContainer(id: string): Promise<void> {
-    await this.dockerService.deleteContainer(id);
+    await this.dockerService.deleteContainer(id)
   }
 
   async getContainer(id: string): Promise<ContainerResponse> {
-    return await this.dockerService.getContainer(id);
+    return await this.dockerService.getContainer(id)
   }
 
   async listContainers(): Promise<ContainerResponse[]> {
-    return await this.dockerService.listContainers();
+    return await this.dockerService.listContainers()
   }
 }
