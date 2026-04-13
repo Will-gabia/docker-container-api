@@ -29,6 +29,19 @@ is_port_available() {
   return 0
 }
 
+generate_available_port() {
+  local port
+  for i in {1..100}; do
+    port=$((RANDOM % (49151 - 1024 + 1) + 1024))
+    if is_port_available "$port"; then
+      echo "$port"
+      return 0
+    fi
+  done
+  echo '{"error": "Failed to find available port"}' >&2
+  exit 1
+}
+
 CONTAINER_NAME=$1
 
 # 컨테이너 이름 검증
