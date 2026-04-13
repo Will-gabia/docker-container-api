@@ -36,7 +36,6 @@ CONTAINER_PORT=80
 # 컨테이너 생성 (Docker 에러를 JSON으로 변환)
 if ! CONTAINER_ID=$(docker run -d \
   --name "$CONTAINER_NAME" \
-  --restart unless-stopped \
   -p "$HOST_PORT:$CONTAINER_PORT" \
   "$IMAGE" 2>&1); then
   echo "{\"error\": \"Failed to create container: $CONTAINER_ID\"}" >&2
