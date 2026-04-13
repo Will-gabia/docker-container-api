@@ -11,16 +11,17 @@ generate_container_name() {
 is_port_available() {
   local port=$1
 
-  # Validate input
+  # 입력 유효성 검사
   if [[ ! "$port" =~ ^[0-9]+$ ]] || [ "$port" -lt 1 ] || [ "$port" -gt 65535 ]; then
     echo "Error: Invalid port number '$port'" >&2
     return 1
   fi
 
-  # Docker 컨테이너의 포트 사용 확인
-  if docker ps -a --format '{{.Ports}}' | grep -q ":${port}\\b"; then
-    return 1
-  fi
+  # Docker 컨테이너의 포트 사용 확인 (docker port 명령어 사용)
+  while read -r container; do
+    docker port "$container" 2>/dev/null | grep -q ":${port}/tcp" && return 1
+  done < <(docker ps -a --format '{{.Names}}')
+
   # 시스템 포트 사용 확인 (ss만 사용)
   if ss -tuln | grep -qE ":${port}\s"; then
     return 1
