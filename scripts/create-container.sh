@@ -64,7 +64,7 @@ fi
 
 # 시스템 엔지니어가 관리하는 설정
 IMAGE="nginx:latest"
-HOST_PORT=8080
+HOST_PORT=$(generate_available_port)
 CONTAINER_PORT=80
 
 # 컨테이너 생성 (Docker 에러를 JSON으로 변환)
