@@ -2,11 +2,12 @@
 
 Boilerplate for your typescript projects using [Hono](https://hono.dev).
 
+This project includes a Docker Container Management API with API key-based authentication.
+
 [Project Structure](#project-structure)  
 [Tech Stack](#tech-stack)  
 [Requirements](#requirements)  
 [Run Locally](#run-locally)  
-[Manage your database using migrations](#manage-your-database-using-migrations)  
 [Run test](#run-test)  
 [FAQ](#faq)  
 [Dependencies](#dependencies)  
@@ -14,14 +15,13 @@ Boilerplate for your typescript projects using [Hono](https://hono.dev).
 
 ## Project Structure
 
-The main implementation is inside of the `/app` directory where it uses basic ts node implementation.
+The main implementation is inside of the `/app` directory where it uses basic ts node implementation with API key-based authentication.
 
 ```bash
 /src
 
 /app/cases: # Use cases of your application
 /app/repositories: # Repositories and interfaces used by the use cases
-/lib/db: # Database structure: migrations, seed, types
 /routes: # Routes and middlewares
 /tests:  # Integration tests
 
@@ -32,7 +32,6 @@ bun.ts:  # Initial file to run the project using Bun
 ## Tech Stack
 
 **Geral:** [Hono](https://hono.dev), [Zod](https://zod.dev), [Eslint](https://eslint.org)  
-**Database:** [Kysely](https://kysely.dev) (queries, migrations, types)  
 **Test:** [Bun test](https://bun.sh/docs/cli/test)  
 **Docs:** [Scalar](https://scalar.com/)
 
@@ -44,29 +43,18 @@ bun.ts:  # Initial file to run the project using Bun
 
 ## Run Locally
 
-<details>
-
-<summary>📁 Setup your database</summary>
-
-I recommend using [dbngin](https://dbngin.com) to spin up an local DB on your machine.
-
-> [!NOTE]  
-> If you prefer docker, you can use postgres service from [this docker compose](https://gist.github.com/marcosrjjunior/d5250416b5fe43d982f998c0b7744464)
-
-Create your database
-
-```
-CREATE DATABASE project
-```
-
-</details>
-
 #### **Update your environment variables**
 
 Create a `.env` files from `.env.example` and populate the values.
 
 ```
 cp .env.example .env
+```
+
+Set the `API_KEY` environment variable for authentication:
+
+```
+API_KEY=your-secret-api-key
 ```
 
 #### **Install your dependencies**
@@ -116,63 +104,6 @@ pnpm bun:dev
 </details>
 
 From here you should be getting a server running on `http://localhost:3333`
-
-## Manage your database using migrations
-
-Migrations are currently defined under `lib/db/migrations`. An initial migration is already there as an example, adjust to meet your project requirements. [Reference](https://kysely.dev/docs/migrations)
-
-Run all migrations
-
-```sh
-pnpm db:migrate:up
-```
-
-> This command will perform the "up" function for all new migrations
-
-Rollback previous migration
-
-```sh
-pnpm db:migrate:down
-```
-
-> This command will perform the "down" function from previous migration
-
-Run seed
-
-```sh
-pnpm db:seed
-```
-
-Reset migrations + run seed
-
-```sh
-pnpm db:reset
-```
-
-#### How to write a migration
-
-To make an update on the database you will need to create a migration
-
-Run the command
-
-```sh
-pnpm db:migrate:create
-```
-
-This will generate a new file under `/lib/db/migrations/DATE-initial.ts`
-
-- Rename the file to describe what the migration will do e.g `DATE-adding_phone_column_to_user.ts`
-
-- Functions **up** and **down** should work.
-
-##### DB types
-
-This project uses [kysely-codegen](https://github.com/RobinBlomberg/kysely-codegen).
-After running the migration you can re-generate the types using
-
-```sh
-pnpm db:generate:types
-```
 
 ## Endpoints
 
