@@ -34,7 +34,7 @@ export class DockerService {
     }
 
     return {
-      id: output.id,
+      id: output.id.substring(0, 12),
       name: output.name,
       image: output.image,
       status: 'running',
@@ -156,7 +156,7 @@ export class DockerService {
             : container.State === 'exited'
               ? 'exited'
               : 'stopped',
-        created: new Date(container.Created * 1000).toISOString(),
+        created: new Date(container.CreatedAt).toISOString(),
       }
     })
   }

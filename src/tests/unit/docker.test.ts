@@ -27,7 +27,7 @@ const mockExec = mock((command: string, options: any) => {
         Names: ['/test-container'],
         Image: 'nginx:latest',
         State: 'running',
-        Created: 1704796800,
+        CreatedAt: '2026-04-09T10:00:00Z',
       }),
       stderr: '',
     }
@@ -86,7 +86,10 @@ describe('DockerService', () => {
   test('deleteContainer - 성공', () => {
     service = new DockerService()
     const result = service.deleteContainer('abc123')
-    expect(result).resolves.toBeUndefined()
+    expect(result).resolves.toMatchObject({
+      id: 'abc123',
+      name: 'test-container',
+    })
   })
 
   test('getContainer - 성공', () => {
