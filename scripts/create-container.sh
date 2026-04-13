@@ -42,7 +42,7 @@ generate_available_port() {
   exit 1
 }
 
-CONTAINER_NAME=$1
+CONTAINER_NAME=$(generate_container_name)
 
 # 컨테이너 이름 검증
 if [ -z "$CONTAINER_NAME" ]; then
