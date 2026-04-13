@@ -8,6 +8,19 @@ generate_container_name() {
   echo "container-${suffix}"
 }
 
+is_port_available() {
+  local port=$1
+  # Docker 컨테이너의 포트 사용 확인
+  if docker ps -a --format '{{.Ports}}' | grep -q ":${port}->"; then
+    return 1
+  fi
+  # 시스템 포트 사용 확인 (ss만 사용)
+  if ss -tuln | grep -q ":${port} "; then
+    return 1
+  fi
+  return 0
+}
+
 CONTAINER_NAME=$1
 
 # 컨테이너 이름 검증
