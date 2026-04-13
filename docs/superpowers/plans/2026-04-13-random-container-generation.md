@@ -56,12 +56,20 @@ generate_container_name 함수 뒤에 다음 함수를 추가:
 ```bash
 is_port_available() {
   local port=$1
-  # Docker 컨테이너의 포트 사용 확인
-  if docker ps -a --format '{{.Ports}}' | grep -q ":${port}->"; then
+
+  # 입력 유효성 검사
+  if [[ ! "$port" =~ ^[0-9]+$ ]] || [ "$port" -lt 1 ] || [ "$port" -gt 65535 ]; then
+    echo "Error: Invalid port number '$port'" >&2
     return 1
   fi
+
+  # Docker 컨테이너의 포트 사용 확인 (docker port 명령어 사용)
+  if docker ps -a --format '{{.Names}}' | while read -r container; do
+    docker port "$container" 2>/dev/null | grep -q ":${port}/tcp" && return 1
+  done
+
   # 시스템 포트 사용 확인 (ss만 사용)
-  if ss -tuln | grep -q ":${port} "; then
+  if ss -tuln | grep -qE ":${port}\s"; then
     return 1
   fi
   return 0
@@ -136,6 +144,75 @@ CONTAINER_NAME=$(generate_container_name)
 ```bash
 git add scripts/create-container.sh
 git commit -m "feat: use random container name instead of user input"
+```
+
+---
+
+## Task 4.1: API name parameter 제거
+
+**Files:**
+
+- Modify: `src/app/services/docker.ts`
+- Modify: `src/types/containers.ts`
+- Modify: `src/lib/schemas/containers.ts`
+
+- [ ] **Step 1: DockerService에서 name parameter 제거**
+
+createContainer 메서드에서 name parameter을 제거:
+
+```typescript
+async createContainer(name: string): Promise<ContainerResponse> {
+  this.validateContainerName(name)  // 제거
+  const result = shell.exec(`${this.SCRIPT_PATH} ${name}`, { silent: true })  // ${name} 제거
+  // ...
+}
+```
+
+다음으로 변경:
+
+```typescript
+async createContainer(): Promise<ContainerResponse> {  // name parameter 제거
+  const result = shell.exec(`${this.SCRIPT_PATH}`, { silent: true })  // name 전달 제거
+  // ...
+}
+```
+
+- [ ] **Step 2: TypeScript 타입 업데이트**
+
+CreateContainerRequest 타입에서 name 필드 제거:
+
+```typescript
+export interface CreateContainerRequest {
+  // name: string  // 제거
+}
+```
+
+- [ ] **Step 3: Zod 스키마 업데이트**
+
+createContainerSchema에서 name 필드 제거:
+
+```typescript
+export const createContainerSchema = z.object({
+  // name: z.string().min(1).max(100).regex(/^[a-zA-Z0-9_-]+$/, 'Invalid container name')  // 제거
+})
+```
+
+- [ ] **Step 4: validateContainerName 메서드 제거**
+
+DockerService 클래스에서 validateContainerName 메서드 전체 제거:
+
+```typescript
+private validateContainerName(name: string): void {
+  const validPattern = /^[a-zA-Z0-9_-]+$/
+  // ...
+}
+```
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add src/app/services/docker.ts src/types/containers.ts src/lib/schemas/containers.ts
+git commit -m "feat: remove name parameter from API - script generates random names"
 ```
 
 ---
