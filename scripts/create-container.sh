@@ -18,7 +18,7 @@ is_port_available() {
   fi
 
   # Docker 컨테이너의 포트 사용 확인
-  if docker ps -a --format '{{.Ports}}' | grep -qE "(^| )${port}/tcp->"; then
+  if docker ps -a --format '{{.Ports}}' | grep -q ":${port}\\b"; then
     return 1
   fi
   # 시스템 포트 사용 확인 (ss만 사용)
