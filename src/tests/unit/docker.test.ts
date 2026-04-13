@@ -1,4 +1,4 @@
-import { describe, test, expect, mock } from 'bun:test';
+import { describe, test, expect, mock } from 'bun:test'
 
 const mockExec = mock((command: string, options: any) => {
   if (command.includes('docker inspect')) {
@@ -12,12 +12,12 @@ const mockExec = mock((command: string, options: any) => {
         Created: '2026-04-09T10:00:00Z',
         NetworkSettings: {
           Ports: {
-            '80/tcp': [{ HostPort: '8080' }]
-          }
-        }
+            '80/tcp': [{ HostPort: '8080' }],
+          },
+        },
       }),
-      stderr: ''
-    };
+      stderr: '',
+    }
   }
   if (command.includes('docker ps')) {
     return {
@@ -27,10 +27,10 @@ const mockExec = mock((command: string, options: any) => {
         Names: ['/test-container'],
         Image: 'nginx:latest',
         State: 'running',
-        Created: 1704796800
+        Created: 1704796800,
       }),
-      stderr: ''
-    };
+      stderr: '',
+    }
   }
   return {
     code: 0,
@@ -38,96 +38,93 @@ const mockExec = mock((command: string, options: any) => {
       id: 'abc123',
       name: 'test-container',
       image: 'nginx:latest',
-      ports: [{ host: 8080, container: 80 }]
+      ports: [{ host: 8080, container: 80 }],
     }),
-    stderr: ''
-  };
-});
+    stderr: '',
+  }
+})
 
 mock.module('shelljs', () => ({
   default: {
-    exec: mockExec
-  }
-}));
+    exec: mockExec,
+  },
+}))
 
-import { DockerService } from '../../app/services/docker';
-import type { ContainerResponse, CreateContainerScriptOutput } from '../../types/containers';
+import { DockerService } from '../../app/services/docker'
+import type {
+  ContainerResponse,
+  CreateContainerScriptOutput,
+} from '../../types/containers'
 
 describe('DockerService', () => {
-  let service: DockerService;
+  let service: DockerService
 
   test('createContainer - 성공', () => {
-    service = new DockerService();
-    const result = service.createContainer('test-container');
+    service = new DockerService()
+    const result = service.createContainer()
 
     expect(result).resolves.toMatchObject({
       id: 'abc123',
       name: 'test-container',
       image: 'nginx:latest',
-      ports: [{ host: 8080, container: 80 }]
-    });
-  });
+      ports: [{ host: 8080, container: 80 }],
+    })
+  })
 
   test('startContainer - 성공', () => {
-    service = new DockerService();
-    const result = service.startContainer('abc123');
-    expect(result).resolves.toBeUndefined();
-  });
+    service = new DockerService()
+    const result = service.startContainer('abc123')
+    expect(result).resolves.toBeUndefined()
+  })
 
   test('stopContainer - 성공', () => {
-    service = new DockerService();
-    const result = service.stopContainer('abc123');
-    expect(result).resolves.toBeUndefined();
-  });
+    service = new DockerService()
+    const result = service.stopContainer('abc123')
+    expect(result).resolves.toBeUndefined()
+  })
 
   test('deleteContainer - 성공', () => {
-    service = new DockerService();
-    const result = service.deleteContainer('abc123');
-    expect(result).resolves.toBeUndefined();
-  });
+    service = new DockerService()
+    const result = service.deleteContainer('abc123')
+    expect(result).resolves.toBeUndefined()
+  })
 
   test('getContainer - 성공', () => {
-    service = new DockerService();
-    const result = service.getContainer('abc123');
+    service = new DockerService()
+    const result = service.getContainer('abc123')
     expect(result).resolves.toMatchObject({
       id: 'abc123456789',
-      status: 'running'
-    });
-  });
+      status: 'running',
+    })
+  })
 
   test('listContainers - 성공', () => {
-    service = new DockerService();
-    const result = service.listContainers();
-    expect(result).resolves.toBeInstanceOf(Array);
-  });
-
-  test('createContainer - 이름 유효성 검증 실패', () => {
-    service = new DockerService();
-    const result = service.createContainer('invalid;name');
-    expect(result).rejects.toThrow('Invalid container name');
-  });
+    service = new DockerService()
+    const result = service.listContainers()
+    expect(result).resolves.toBeInstanceOf(Array)
+  })
 
   test('startContainer - ID 유효성 검증 실패', () => {
-    service = new DockerService();
-    const result = service.startContainer('invalid$id');
-    expect(result).rejects.toThrow('Invalid container ID');
-  });
+    service = new DockerService()
+    const result = service.startContainer('invalid$id')
+    expect(result).rejects.toThrow('Invalid container ID')
+  })
 
   test('stopContainer - ID 유효성 검증 실패', () => {
-    service = new DockerService();
-    const result = service.stopContainer('invalid$id');
-    expect(result).rejects.toThrow('Invalid container ID');
-  });
+    service = new DockerService()
+    const result = service.stopContainer('invalid$id')
+    expect(result).rejects.toThrow('Invalid container ID')
+  })
 
   test('deleteContainer - ID 유효성 검증 실패', () => {
-    service = new DockerService();
-    const result = service.deleteContainer('invalid$id');
-    expect(result).rejects.toThrow('Invalid container ID');
-  });
+    service = new DockerService()
+    const result = service.deleteContainer('invalid$id')
+    expect(result).rejects.toThrow('Invalid container ID')
+  })
 
   test('getContainer - ID 유효성 검증 실패', () => {
-    service = new DockerService();
-    const result = service.getContainer('invalid$id');
-    expect(result).rejects.toThrow('Invalid container ID');
-  });
-});
+    service = new DockerService()
+    const result = service.getContainer('invalid$id')
+    expect(result).rejects.toThrow('Invalid container ID')
+  })
+})
