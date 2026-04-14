@@ -1,0 +1,270 @@
+openapi: 3.0.3
+info:
+  title: Docker Container API
+  version: 1.0.0
+  description: |
+    API for managing Docker containers.
+    Provides endpoints for creating, listing, viewing, starting, stopping, and deleting containers.
+servers:
+  - url: http://localhost:3000
+    description: Local Development Server
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+  schemas:
+    PortMapping:
+      type: object
+      properties:
+        host:
+          type: integer
+          description: Exposed port on the host machine.
+          example: 12345
+        container:
+          type: integer
+          description: Target port inside the container.
+          example: 80
+      required:
+        - host
+        - container
+
+    Container:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique container identifier.
+          example: "abc123def456"
+        name:
+          type: string
+          description: Container name.
+          example: "my-container"
+        image:
+          type: string
+          description: Docker image used by the container.
+          example: "nginx:latest"
+        status:
+          type: string
+          description: Current execution status of the container.
+          enum: [running, exited, stopped]
+          example: "running"
+        created:
+          type: string
+          format: date-time
+          description: Creation timestamp.
+          example: "2026-04-13T12:00:00.000Z"
+        api_token:
+          type: string
+          description: Associated API token (mostly returned only on creation).
+          example: "1234567890"
+        ports:
+          type: array
+          description: Port mappings for the container.
+          items:
+            $ref: '#/components/schemas/PortMapping'
+      required:
+        - id
+        - name
+        - image
+        - status
+        - created
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Unauthorized"
+        message:
+          type: string
+          example: "Invalid API key"
+
+security:
+  - ApiKeyAuth: []
+
+paths:
+  /health:
+    get:
+      summary: Health Check
+      description: Check if the server is running properly.
+      security: []
+      responses:
+        '200':
+          description: Server is healthy and running.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uptime:
+                    type: number
+                    example: 123.456
+                  message:
+                    type: string
+                    example: "Ok"
+                  date:
+                    type: string
+                    format: date-time
+                    example: "2026-04-13T12:00:00.000Z"
+
+  /containers:
+    get:
+      summary: List Containers
+      description: Retrieve a list of all containers managed by the API.
+      responses:
+        '200':
+          description: Successfully retrieved list of containers.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Container'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      summary: Create Container
+      description: Create and start a new Docker container.
+      requestBody:
+        description: Configuration for the new container. Note that sending an empty JSON object `{}` is also supported.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Optional name for the container.
+                  example: "test-container"
+      responses:
+        '201':
+          description: Container created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Container'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Validation error"
+                  message:
+                    type: object
+                    description: Specific validation issues.
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal error failed to create container.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Internal error"
+                  message:
+                    type: string
+                    example: "Failed to create container"
+
+  /containers/{id}:
+    get:
+      summary: Get Container Details
+      description: Retrieve detailed information about a specific container.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Target Container ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved container details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Container'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      summary: Delete Container
+      description: Forcibly delete a specific container (even if running).
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Target Container ID
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Successfully deleted container. No content returned.
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /containers/{id}/start:
+    post:
+      summary: Start Container
+      description: Boot up a previously stopped container.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Target Container ID
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Successfully started container. No content returned.
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /containers/{id}/stop:
+    post:
+      summary: Stop Container
+      description: Stop a currently running container.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Target Container ID
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Successfully stopped container. No content returned.
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'

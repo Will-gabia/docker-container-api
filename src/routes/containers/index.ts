@@ -12,7 +12,7 @@ function createContainerRoutes(useCase: ContainerUseCase): Hono {
       return c.json(result, 201)
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return c.json({ error: 'Validation error', message: error.errors }, 400)
+        return c.json({ error: 'Validation error', message: error.issues }, 400)
       }
       return c.json(
         { error: 'Internal error', message: 'Failed to create container' },

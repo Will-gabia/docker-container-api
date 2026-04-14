@@ -1,9 +1,8 @@
 import { describe, test, expect, beforeAll, afterEach } from 'bun:test'
-import { Hono } from 'hono'
 
 describe('Container API Integration Tests', () => {
   const apiKey = process.env.API_KEY || 'dev-api-key-12345'
-  let app: Hono
+  let app: typeof import('../../app').app
   let containerId: string | undefined
 
   beforeAll(async () => {

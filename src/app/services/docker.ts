@@ -37,6 +37,7 @@ export class DockerService {
       id: output.id.substring(0, 12),
       name: output.name,
       image: output.image,
+      api_token: output.api_token,
       status: 'running',
       created: new Date().toISOString(),
       ports: output.ports,
@@ -103,12 +104,12 @@ export class DockerService {
     const status = inspect.State.Status
 
     const ports: PortMapping[] = []
-    const portBindings = inspect.NetworkSettings.Ports
+    const portBindings: Record<string, any[]> = inspect.NetworkSettings.Ports || {}
     for (const [containerPort, bindings] of Object.entries(portBindings)) {
-      if (bindings && bindings.length > 0) {
+      if (Array.isArray(bindings) && bindings.length > 0) {
         ports.push({
-          container: parseInt(containerPort.split('/')[0], 10),
-          host: parseInt(bindings[0].HostPort, 10),
+          container: parseInt(containerPort.split('/')[0] as string, 10),
+          host: parseInt(bindings[0]?.HostPort || '0', 10),
         })
       }
     }

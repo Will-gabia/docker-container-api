@@ -46,6 +46,7 @@ curl -X POST http://localhost:3000/containers \
   "name": "my-container",
   "image": "nginx:latest",
   "status": "running",
+  "api_token": "1234567890",
   "created": "2026-04-13T12:00:00.000Z",
   "ports": [
     {
@@ -55,8 +56,6 @@ curl -X POST http://localhost:3000/containers \
   ]
 }
 ```
-
-**주의:** `name` 필드는 필수이며, 1-100자 사이여야 하고 `[a-zA-Z0-9_-]+` 패턴을 따라야 합니다.
 
 ---
 
