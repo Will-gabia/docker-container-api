@@ -1,0 +1,18 @@
+2026-04-13 02:40:50,155 INFO hermes_cli.auth: Z.AI: auto-detected endpoint Global (Coding Plan) (https://api.z.ai/api/coding/paas/v4)
+2026-04-13 02:40:50,462 INFO run_agent: Loaded environment variables from /opt/data/.env
+2026-04-13 02:40:59,396 INFO hermes_cli.auth: Z.AI: auto-detected endpoint Global (Coding Plan) (https://api.z.ai/api/coding/paas/v4)
+2026-04-13 02:40:59,403 INFO agent.auxiliary_client: Vision auto-detect: using active provider zai (glm-4.7)
+2026-04-13 02:41:01,501 INFO hermes_cli.auth: Z.AI: auto-detected endpoint Global (Coding Plan) (https://api.z.ai/api/coding/paas/v4)
+2026-04-13 02:41:01,508 INFO agent.auxiliary_client: Vision auto-detect: using active provider zai (glm-4.7)
+2026-04-13 02:41:12,180 INFO hermes_cli.auth: Z.AI: auto-detected endpoint China (Coding Plan) (https://open.bigmodel.cn/api/coding/paas/v4)
+2026-04-13 02:41:12,187 INFO agent.auxiliary_client: Vision auto-detect: using active provider zai (glm-4.7)
+2026-04-13 02:41:12,229 INFO tools.tirith_security: tirith not found — downloading latest release for x86_64-unknown-linux-gnu...
+2026-04-13 02:41:12,381 INFO tools.tirith_security: cosign not on PATH — installing tirith with SHA-256 verification only (install cosign for full supply chain verification)
+2026-04-13 02:41:12,477 INFO tools.tirith_security: tirith installed to /opt/data/bin/tirith (SHA-256 only)
+2026-04-13 02:44:21,320 INFO run_agent: Loaded environment variables from /opt/data/.env
+2026-04-13 02:44:24,673 INFO hermes_cli.auth: Z.AI: auto-detected endpoint Global (Coding Plan) (https://api.z.ai/api/coding/paas/v4)
+2026-04-13 02:44:24,681 INFO agent.auxiliary_client: Vision auto-detect: using active provider zai (glm-4.7)
+2026-04-13 02:44:27,862 INFO hermes_cli.auth: Z.AI: auto-detected endpoint Global (Coding Plan) (https://api.z.ai/api/coding/paas/v4)
+2026-04-13 02:44:27,868 INFO agent.auxiliary_client: Vision auto-detect: using active provider zai (glm-4.7)
+2026-04-13 02:44:31,179 INFO hermes_cli.auth: Z.AI: auto-detected endpoint Global (Coding Plan) (https://api.z.ai/api/coding/paas/v4)
+2026-04-13 02:44:31,185 INFO agent.auxiliary_client: Vision auto-detect: using active provider zai (glm-4.7)

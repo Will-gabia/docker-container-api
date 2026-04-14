@@ -2,6 +2,10 @@
 
 set -e
 
+if [ -f ../.env ]; then
+    export $(cat ../.env | grep -v '^#' | xargs)
+fi
+
 CONTAINER_NAME=$1
 
 # 컨테이너 이름/ID 검증
@@ -37,7 +41,7 @@ if ! OUTPUT=$(docker rm -f "$CONTAINER_NAME" 2>&1); then
   exit 1
 fi
 
-AGENT_PATH_BACKUP="${AGENT_PATH:-/usr/local/hermes/agents}/$CONTAINER_NAME""_backup"
+AGENT_PATH_BACKUP="${AGENT_PATH:-/usr/local/hermes/agents}/$CONTAINER_NAME"".bak"
 AGENT_PATH="${AGENT_PATH:-/usr/local/hermes/agents}/$CONTAINER_NAME"
 
 mv $AGENT_PATH $AGENT_PATH_BACKUP

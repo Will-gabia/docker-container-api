@@ -35,9 +35,7 @@ curl -X GET http://localhost:3000/health
 curl -X POST http://localhost:3000/containers \
   -H "Content-Type: application/json" \
   -H "X-API-Key: your-api-key-here" \
-  -d '{
-    "name": "my-container"
-  }'
+  -d '{}'
 ```
 
 **응답:**

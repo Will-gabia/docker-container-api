@@ -2,6 +2,10 @@
 
 set -e
 
+if [ -f ../.env ]; then
+    export $(cat ../.env | grep -v '^#' | xargs)
+fi
+
 generate_api_key() {
     echo "$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 40 | head -n 1)"
 }
@@ -88,6 +92,7 @@ EOF
 # 컨테이너 생성 (Docker 에러를 JSON으로 변환)
 if ! CONTAINER_ID=$(docker run -d \
   --name "$CONTAINER_NAME" \
+  -u $DOCKER_UID:$DOCKER_GID \
   -p "$HOST_PORT:$CONTAINER_PORT" \
   -v "$AGENT_PATH:/opt/data" \
   "$IMAGE" gateway run 2>&1); then
