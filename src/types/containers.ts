@@ -20,6 +20,7 @@ export interface ContainerResponse {
   id: string
   name: string
   image: string
+  api_token?: string
   status: 'running' | 'stopped' | 'exited'
   created: string
   ports?: PortMapping[]
@@ -40,6 +41,7 @@ export interface CreateContainerScriptOutput {
   id: string
   name: string
   image: string
+  api_token: string
   ports: PortMapping[]
 }
 
