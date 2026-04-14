@@ -5,21 +5,22 @@
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",
     "resolveJsonModule": true,
-    "types": ["bun", "pg"],
-
+    "types": [
+      "bun"
+    ],
     // Best practices
     "strict": true,
     "skipLibCheck": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
-
     // Some stricter flags
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false,
-
     // Nodejs constumisation
-    "outDir": "./dist"
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "module": "CommonJS"
   }
 }

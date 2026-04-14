@@ -48,12 +48,12 @@ class MockContainerUseCase {
 }
 
 describe('Container Routes', () => {
-  let app: Hono
+  let app: Hono<{ Variables: { auth: boolean } }>
   let useCase: MockContainerUseCase
 
   beforeEach(() => {
     useCase = new MockContainerUseCase()
-    app = new Hono()
+    app = new Hono<{ Variables: { auth: boolean } }>()
     app.use('*', (c, next) => {
       c.set('auth', true)
       return next()
