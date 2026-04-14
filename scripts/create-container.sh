@@ -2,6 +2,10 @@
 
 set -e
 
+generate_api_key() {
+    echo "$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 40 | head -n 1)"
+}
+
 generate_container_name() {
   local suffix
   suffix=$(LC_ALL=C tr -dc 'a-z0-9' < /dev/urandom | head -c 6)
@@ -62,16 +66,31 @@ if [[ ! "$CONTAINER_NAME" =~ ^[a-zA-Z0-9][a-zA-Z0-9_.-]*$ ]]; then
   exit 1
 fi
 
+TEMPLATE_PATH=${TEMPLATE_PATH:-/usr/local/hermes/default}
+AGENT_PATH="${AGENT_PATH:-/usr/local/hermes/agents}/$CONTAINER_NAME"
+
+cp -r $TEMPLATE_PATH $AGENT_PATH
+
 # 시스템 엔지니어가 관리하는 설정
-IMAGE="nginx:latest"
+IMAGE="nousresearch/hermes-agent"
 HOST_PORT=$(generate_available_port)
-CONTAINER_PORT=80
+CONTAINER_PORT=8642
+
+API_SECRET=$(generate_api_key)
+
+cat >> "$AGENT_PATH/.env" <<EOF
+API_SERVER_ENABLED=true
+API_SERVER_HOST=0.0.0.0
+API_SERVER_PORT=8642
+API_SERVER_KEY=$API_SECRET
+EOF
 
 # 컨테이너 생성 (Docker 에러를 JSON으로 변환)
 if ! CONTAINER_ID=$(docker run -d \
   --name "$CONTAINER_NAME" \
   -p "$HOST_PORT:$CONTAINER_PORT" \
-  "$IMAGE" 2>&1); then
+  -v "$AGENT_PATH:/opt/data" \
+  "$IMAGE" gateway run 2>&1); then
   echo "{\"error\": \"Failed to create container: $CONTAINER_ID\"}" >&2
   exit 1
 fi
@@ -82,6 +101,7 @@ cat <<EOF
   "id": "$CONTAINER_ID",
   "name": "$CONTAINER_NAME",
   "image": "$IMAGE",
+  "api_token": "$API_SECRET",
   "ports": [
     {"host": $HOST_PORT, "container": $CONTAINER_PORT}
   ]
