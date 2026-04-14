@@ -30,7 +30,7 @@ export class DockerService {
     try {
       output = JSON.parse(result.stdout)
     } catch (e) {
-      throw new Error(`Failed to parse script output: Invalid JSON response`)
+      throw new Error(`Failed to parse script output: Invalid JSON response`, { cause: e })
     }
 
     return {
@@ -76,7 +76,7 @@ export class DockerService {
     try {
       output = JSON.parse(result.stdout)
     } catch (e) {
-      throw new Error(`Failed to parse script output: Invalid JSON response`)
+      throw new Error(`Failed to parse script output: Invalid JSON response`, { cause: e })
     }
 
     return {
@@ -99,7 +99,7 @@ export class DockerService {
     try {
       inspect = JSON.parse(result.stdout)
     } catch (e) {
-      throw new Error(`Failed to parse container data: Invalid JSON response`)
+      throw new Error(`Failed to parse container data: Invalid JSON response`, { cause: e })
     }
     const status = inspect.State.Status
 
@@ -145,7 +145,7 @@ export class DockerService {
       try {
         container = JSON.parse(line)
       } catch (e) {
-        throw new Error(`Failed to parse container data: Invalid JSON response`)
+        throw new Error(`Failed to parse container data: Invalid JSON response`, { cause: e })
       }
       return {
         id: container.ID.substring(0, 12),
