@@ -1,4 +1,5 @@
 import { Context, Next } from 'hono';
+import { timingSafeEqual as cryptoTimingSafeEqual } from 'crypto';
 
 function timingSafeEqual(a: string, b: string): boolean {
   if (a.length !== b.length) {
@@ -9,7 +10,7 @@ function timingSafeEqual(a: string, b: string): boolean {
   const bufferB = Buffer.from(b, 'utf8');
 
   try {
-    return require('crypto').timingSafeEqual(bufferA, bufferB);
+    return cryptoTimingSafeEqual(bufferA, bufferB);
   } catch {
     return false;
   }
